@@ -1,0 +1,58 @@
+-- Script d'importation des fichiers CSV
+USE world_explorer;
+
+-- Désactiver temporairement les vérifications de clés étrangères
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Vider les tables si elles contiennent déjà des données
+TRUNCATE TABLE countrylanguage;
+TRUNCATE TABLE city;
+TRUNCATE TABLE country;
+
+-- IMPORTATION DE LA TABLE COUNTRY
+-- Remplacez 'C:/chemin/vers/country.csv' par le chemin réel de votre fichier
+LOAD DATA LOCAL INFILE '/home/pyh/Documents/DATA_PROJECT/data_csv/country.csv'
+INTO TABLE country
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS  -- Cette ligne ignore la première ligne (en-têtes)
+(Code, Name, Continent, Region, SurfaceArea, @IndepYear, Population, @LifeExpectancy, @GNP, @GNPOld, LocalName, GovernmentForm, @HeadOfState, @Capital, Code2)
+SET 
+    IndepYear = NULLIF(@IndepYear, ''),
+    LifeExpectancy = NULLIF(@LifeExpectancy, ''),
+    GNP = NULLIF(@GNP, ''),
+    GNPOld = NULLIF(@GNPOld, ''),
+    HeadOfState = NULLIF(@HeadOfState, ''),
+    Capital = NULLIF(@Capital, '');
+
+-- IMPORTATION DE LA TABLE CITY
+LOAD DATA LOCAL INFILE '/home/pyh/Documents/DATA_PROJECT/data_csv/city.csv'
+INTO TABLE city
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(ID, Name, CountryCode, District, Population);
+
+-- IMPORTATION DE LA TABLE COUNTRYLANGUAGE
+LOAD DATA LOCAL INFILE '/home/pyh/Documents/DATA_PROJECT/data_csv/countrylanguage.csv'
+INTO TABLE countrylanguage
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(CountryCode, Language, IsOfficial, Percentage);
+
+-- Réactiver les vérifications de clés étrangères
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- Vérifications
+SELECT 'Nombre de pays:', COUNT(*) FROM country;
+SELECT 'Nombre de villes:', COUNT(*) FROM city;
+SELECT 'Nombre de langues:', COUNT(*) FROM countrylanguage;
+
+-- Afficher quelques exemples
+SELECT * FROM country LIMIT 5;
+SELECT * FROM city LIMIT 5;
+SELECT * FROM countrylanguage LIMIT 5;
