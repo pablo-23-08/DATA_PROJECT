@@ -69,7 +69,7 @@ CREATE TABLE countrylanguage (
    ========================================================= */
 
 /* ---------- COUNTRY ---------- */
-LOAD DATA LOCAL INFILE '/home/pyh/Documents/DATA_PROJECT/data_csv/country.csv'
+LOAD DATA LOCAL INFILE 'country.csv'
 INTO TABLE country
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
@@ -77,7 +77,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 LINES;
 
 /* ---------- CITY ---------- */
-LOAD DATA LOCAL INFILE '/home/pyh/Documents/DATA_PROJECT/data_csv/city.csv'
+LOAD DATA LOCAL INFILE 'city.csv'
 INTO TABLE city
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
@@ -85,7 +85,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 LINES;
 
 /* ---------- COUNTRY LANGUAGE ---------- */
-LOAD DATA LOCAL INFILE '/home/pyh/Documents/DATA_PROJECT/data_csv/countrylanguage.csv'
+LOAD DATA LOCAL INFILE 'countrylanguage.csv'
 INTO TABLE countrylanguage
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'

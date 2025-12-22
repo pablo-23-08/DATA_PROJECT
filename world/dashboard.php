@@ -1,16 +1,16 @@
 <?php
-// Inclusions
+//Inclusions
 require_once 'config/database.php';
 require_once 'includes/functions.php';
 
-// Définir les variables pour l'en-tête
+//Définir les variables pour l'en-tête
 $pageTitle = 'Dashboard Mondial';
 $pageIcon = '📊';
 
-// Connexion à la base de données
+//Connexion à la base de données
 $pdo = getDbConnection();
 
-// STATISTIQUES GLOBALES
+//STATISTIQUES GLOBALES
 $stmt = $pdo->query("SELECT SUM(Population) as TotalPop FROM country");
 $totalPopulation = $stmt->fetch()['TotalPop'];
 
@@ -23,7 +23,7 @@ $totalCities = $stmt->fetch()['Total'];
 $stmt = $pdo->query("SELECT AVG(LifeExpectancy) as AvgLife FROM country WHERE LifeExpectancy > 0");
 $avgLifeExpectancy = $stmt->fetch()['AvgLife'];
 
-// POPULATION PAR CONTINENT
+//POPULATION PAR CONTINENT
 $stmt = $pdo->query("
     SELECT Continent, 
            SUM(Population) as TotalPopulation, 
@@ -36,7 +36,7 @@ $stmt = $pdo->query("
 ");
 $continents = $stmt->fetchAll();
 
-// TOP 10 VILLES
+//TOP 10 VILLES
 $stmt = $pdo->query("
     SELECT c.Name as CityName, 
            c.Population, 
@@ -51,7 +51,7 @@ $stmt = $pdo->query("
 ");
 $cities = $stmt->fetchAll();
 
-// TOP 5 PAYS
+//TOP 5 PAYS
 $stmt = $pdo->query("
     SELECT Name, Population, Continent
     FROM country
@@ -61,7 +61,7 @@ $stmt = $pdo->query("
 ");
 $topCountries = $stmt->fetchAll();
 
-// Inclure l'en-tête
+//Inclure l'en-tête
 include 'includes/header.php';
 ?>
 

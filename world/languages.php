@@ -1,16 +1,16 @@
 <?php
-// Inclusions
+//Inclusions
 require_once 'config/database.php';
 require_once 'includes/functions.php';
 
-// Définir les variables pour l'en-tête
+//Définir les variables pour l'en-tête
 $pageTitle = 'Langues du Monde';
 $pageIcon = '🗣️';
 
-// Connexion à la base de données
+//Connexion à la base de données
 $pdo = getDbConnection();
 
-// LANGUES LES PLUS PARLÉES DANS LE MONDE
+//LANGUES LES PLUS PARLÉES DANS LE MONDE
 $stmt = $pdo->query("
     SELECT cl.Language, 
            SUM((c.Population * cl.Percentage) / 100) as TotalSpeakers,
@@ -25,32 +25,8 @@ $stmt = $pdo->query("
 ");
 $worldLanguages = $stmt->fetchAll();
 
-// LISTE DES CONTINENTS pour le filtre
-$stmt = $pdo->query("SELECT DISTINCT Continent FROM country ORDER BY Continent");
-$continents = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
-// TRAITEMENT DU FILTRE PAR CONTINENT
-$selectedContinent = isset($_GET['continent']) ? $_GET['continent'] : '';
-$continentLanguages = [];
-
-if ($selectedContinent) {
-    $stmt = $pdo->prepare("
-        SELECT cl.Language, 
-               SUM((c.Population * cl.Percentage) / 100) as TotalSpeakers,
-               COUNT(DISTINCT cl.CountryCode) as NbCountries,
-               SUM(CASE WHEN cl.IsOfficial = 'T' THEN 1 ELSE 0 END) as NbOfficial
-        FROM countrylanguage cl
-        JOIN country c ON cl.CountryCode = c.Code
-        WHERE c.Continent = :continent AND c.Population > 0
-        GROUP BY cl.Language
-        ORDER BY TotalSpeakers DESC
-        LIMIT 15
-    ");
-    $stmt->execute(['continent' => $selectedContinent]);
-    $continentLanguages = $stmt->fetchAll();
-}
-
-// LANGUES OFFICIELLES LES PLUS RÉPANDUES
+//LANGUES OFFICIELLES LES PLUS RÉPANDUES
 $stmt = $pdo->query("
     SELECT cl.Language, 
            COUNT(DISTINCT cl.CountryCode) as NbCountries,
@@ -64,7 +40,7 @@ $stmt = $pdo->query("
 ");
 $officialLanguages = $stmt->fetchAll();
 
-// STATISTIQUES GÉNÉRALES
+//STATISTIQUES GÉNÉRALES
 $stmt = $pdo->query("SELECT COUNT(DISTINCT Language) as Total FROM countrylanguage");
 $totalLanguages = $stmt->fetch()['Total'];
 
@@ -75,7 +51,7 @@ $stmt = $pdo->query("
 ");
 $totalOfficialLanguages = $stmt->fetch()['Total'];
 
-// Inclure l'en-tête
+//Inclure l'en-tête
 include 'includes/header.php';
 ?>
 
@@ -91,73 +67,6 @@ include 'includes/header.php';
     </div>
 </div>
 
-<!-- FILTRE PAR CONTINENT -->
-<div class="filter-card">
-    <h3>Filtrer par Continent</h3>
-    <form method="GET" class="filter-form">
-        <select name="continent" id="continent">
-            <option value="">-- Sélectionner un continent --</option>
-            <?php foreach($continents as $continent): ?>
-                <option value="<?= escape($continent) ?>" 
-                        <?= $selectedContinent === $continent ? 'selected' : '' ?>>
-                    <?= escape($continent) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-        <button type="submit">Filtrer</button>
-        <?php if($selectedContinent): ?>
-            <a href="languages.php" style="text-decoration:none;">
-                <button type="button">Réinitialiser</button>
-            </a>
-        <?php endif; ?>
-    </form>
-</div>
-
-<!-- RÉSULTATS DU FILTRE PAR CONTINENT -->
-<?php if($selectedContinent && $continentLanguages): ?>
-<div class="card full-width" style="margin-bottom: 20px;">
-    <h2>Langues en <?= escape($selectedContinent) ?></h2>
-    <table>
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Langue</th>
-                <th>Locuteurs estimés</th>
-                <th>Pays</th>
-                <th>Statut officiel</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php 
-            $maxSpeakers = $continentLanguages[0]['TotalSpeakers'];
-            $rank = 1; 
-            foreach($continentLanguages as $lang): 
-            ?>
-            <tr>
-                <td><span class="rank-number"><?= $rank++ ?></span></td>
-                <td><strong><?= escape($lang['Language']) ?></strong></td>
-                <td><?= formatNumber($lang['TotalSpeakers']) ?></td>
-                <td><?= $lang['NbCountries'] ?> pays</td>
-                <td>
-                    <?php if($lang['NbOfficial'] > 0): ?>
-                        <span class="badge official"><?= $lang['NbOfficial'] ?> pays</span>
-                    <?php else: ?>
-                        <span class="badge">Non officielle</span>
-                    <?php endif; ?>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="5" style="padding: 0 12px;">
-                    <div class="language-bar" 
-                         style="width: <?= ($lang['TotalSpeakers'] / $maxSpeakers) * 100 ?>%;">
-                    </div>
-                </td>
-            </tr>
-            <?php endforeach; ?>
-        </tbody>
-    </table>
-</div>
-<?php endif; ?>
 
 <!-- CONTENU PRINCIPAL -->
 <div class="content-grid">

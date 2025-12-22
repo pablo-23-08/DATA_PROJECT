@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>World Database - Accueil</title>
+    <title>World-database</title>
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>🌍 World Database</h1>
+        <h1>🌍 World Informations</h1>
         <p class="subtitle">Explorez les données mondiales sur les pays, villes et langues</p>
         
         <div class="button-grid">

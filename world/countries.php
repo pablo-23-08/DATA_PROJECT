@@ -1,20 +1,20 @@
 <?php
-// Inclusions
+//Inclusions
 require_once 'config/database.php';
 require_once 'includes/functions.php';
 
-// Définir les variables pour l'en-tête
+//Définir les variables pour l'en-tête
 $pageTitle = 'Informations sur les Pays';
 $pageIcon = '🗺️';
 
-// Connexion à la base de données
+//Connexion à la base de données
 $pdo = getDbConnection();
 
-// LISTE DES PAYS pour le menu déroulant
+//LISTE DES PAYS pour le menu déroulant
 $stmt = $pdo->query("SELECT Code, Name, Continent FROM country ORDER BY Name");
 $allCountries = $stmt->fetchAll();
 
-// TRAITEMENT DE LA RECHERCHE
+//TRAITEMENT DE LA RECHERCHE
 $selectedCountry = isset($_GET['country']) ? $_GET['country'] : '';
 $countryData = null;
 $capitalData = null;
@@ -22,20 +22,20 @@ $languages = [];
 $cities = [];
 
 if ($selectedCountry) {
-    // Informations du pays
+    //Informations du pays
     $stmt = $pdo->prepare("SELECT * FROM country WHERE Code = :code");
     $stmt->execute(['code' => $selectedCountry]);
     $countryData = $stmt->fetch();
     
     if ($countryData) {
-        // Informations de la capitale
+        //Informations de la capitale
         if ($countryData['Capital']) {
             $stmt = $pdo->prepare("SELECT * FROM city WHERE ID = :id");
             $stmt->execute(['id' => $countryData['Capital']]);
             $capitalData = $stmt->fetch();
         }
         
-        // Langues parlées dans le pays
+        //Langues parlées dans le pays
         $stmt = $pdo->prepare("
             SELECT Language, IsOfficial, Percentage
             FROM countrylanguage
@@ -45,7 +45,7 @@ if ($selectedCountry) {
         $stmt->execute(['code' => $selectedCountry]);
         $languages = $stmt->fetchAll();
         
-        // Principales villes du pays
+        //Principales villes du pays
         $stmt = $pdo->prepare("
             SELECT Name, District, Population
             FROM city
@@ -58,7 +58,7 @@ if ($selectedCountry) {
     }
 }
 
-// Inclure l'en-tête
+//Inclure l'en-tête
 include 'includes/header.php';
 ?>
 
@@ -255,7 +255,6 @@ include 'includes/header.php';
     <?php endif; ?>
 
 <?php elseif($selectedCountry): ?>
-    <!-- PAYS NON TROUVÉ -->
     <div class="card">
         <div class="no-data">
             ❌ Aucun pays trouvé avec ce code.<br>
@@ -263,13 +262,7 @@ include 'includes/header.php';
         </div>
     </div>
 <?php else: ?>
-    <!-- MESSAGE INITIAL -->
-    <div class="card">
-        <div class="no-data">
-            👆 Sélectionnez un pays dans le menu déroulant ci-dessus<br>
-            pour voir ses informations détaillées
-        </div>
-    </div>
+    
 <?php endif; ?>
 
 </body>
